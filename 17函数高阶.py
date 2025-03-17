@@ -67,7 +67,7 @@ upload('Python从入门到住院.pdf')
 
 
 
-#'''
+'''
 #语法糖形态
 import random
 import time
@@ -99,4 +99,17 @@ def upload(filename):
 
 download('MySQL从删库到跑路.avi')
 upload('Python从入门到住院.pdf')
-#'''
+'''
+
+'''
+def get_multiple_func(n):
+    def multiple(x):
+        return n * x    
+    return multiple
+
+double = get_multiple_func(2)
+triple = get_multiple_func(3)
+
+print(double(7))    # 14
+print(triple(5))    # 15
+'''
