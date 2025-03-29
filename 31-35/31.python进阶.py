@@ -273,7 +273,7 @@ def _merge_sort(items, comp):
 '''
 
 
-#顺序查找
+# 顺序查找
 '''
 def seq_search(items, key):
     """顺序查找"""
@@ -288,6 +288,9 @@ print(test)
 '''
 
 
+
+# 折半查找
+'''
 def bin_search(items, key):
     """折半查找"""
     start, end = 0, len(items) - 1
@@ -300,3 +303,251 @@ def bin_search(items, key):
         else:
             return mid
     return -1
+
+# 测试用例
+test_items = [1, 3, 5, 7, 9, 11, 13]
+
+# 测试能找到的情况
+test_key_found = 7
+result_found = bin_search(test_items, test_key_found)
+print(f"查找 {test_key_found} 的结果索引: {result_found}")
+
+# 测试找不到的情况
+test_key_not_found = 4
+result_not_found = bin_search(test_items, test_key_not_found)
+print(f"查找 {test_key_not_found} 的结果索引: {result_not_found}")
+'''
+
+
+# 穷举法 - 又称为暴力破解法，对所有的可能性进行验证，直到找到正确答案。
+# 贪婪法 - 在对问题求解时，总是做出在当前看来
+# 最好的选择，不追求最优解，快速找到满意解。
+# 分治法 - 把一个复杂的问题分成两个或更多的相同或相似的子问题，
+#          再把子问题分成更小的子问题，直到可以直接求解的程度，
+#          最后将子问题的解进行合并得到原问题的解。
+# 回溯法 - 回溯法又称为试探法，按选优条件向前搜索，
+#          当搜索到某一步发现原先选择并不优或达不到目标时，就退回一步重新选择。
+# 动态规划 - 基本思想也是将待求解问题分解成若干个子问题，
+#           先求解并保存这些子问题的解，避免产生大量的重复运算。
+
+
+# 穷举法例子：百钱百鸡和五人分鱼
+'''
+for x in range(20):
+    for y in range(33):
+        z = 100-x-y
+        if 5*x + 3*y + z//3 ==100 and z%3 ==0:
+            print(x,y,z)
+'''
+
+'''
+fish = 6
+while True:
+    total = fish
+    enough = True
+    for _ in range(5):
+        if (total - 1) % 5 == 0:
+            total = (total - 1)//5 *4
+        else:
+            enough = False
+            break
+    if enough:
+        print(fish)
+        break
+    fish += 5
+'''
+
+
+# 贪婪法例子：假设小偷有一个背包，最多能装20公斤赃物，
+# 他闯入一户人家，发现如下表所示的物品。很显然，
+# 他不能把所有物品都装进背包，所以必须确定拿走哪些物品，留下哪些物品。
+
+"""
+贪婪法：在对问题求解时，总是做出在当前看来是最好的选择，不追求最优解，快速找到满意解。
+输入：
+20 6
+电脑 200 20
+收音机 20 4
+钟 175 10
+花瓶 50 2
+书 10 1
+油画 90 9
+"""
+'''
+class Thing(object):
+    """物品"""
+
+    def __init__(self,name,price,weight):
+        self.name = name
+        self.price = price
+        self.weight = weight
+
+    @property
+    def value(self):
+        """价格重量比"""
+        return self.price / self.weight
+
+def input_thing():
+    """输入物品信息"""
+    name_str,price_str,weight_str = input().split()
+    return name_str,int(price_str),int(weight_str)
+
+def main():
+    """主函数"""
+    max_weight, num_of_things =map(int,input().split())
+    all_things = []
+    for _ in range(num_of_things):
+        # * 是 Python 的 解包运算符（Unpacking Operator），它会将 input_thing() 返回的元组拆解成独立的参数。
+        # Thing 的 __init__ 方法需要 3 个参数：name, price, weight。input_thing() 返回的是一个元组 (name, price, weight)。
+        # 直接用 Thing(input_thing()) 会报错，因为 Python 会尝试把整个元组作为第一个参数 name 传入，而不是拆分成 3 个参数。
+        all_things.append(Thing(*input_thing()))  
+
+    # all_things = [Thing('电脑', 200, 20), Thing('收音机', 20, 4), Thing('钟', 175, 10), Thing('花瓶', 50, 2), Thing('书', 10, 1)]
+    # lambda x: x.value 是一个匿名函数（Lambda 函数），它定义了排序的规则。
+    # 这里的 x 是 all_things 列表中的每一个元素（即 Thing 对象）。
+    # x.value 是调用 Thing 对象的 value 属性（通过 @property 装饰器定义的方法）
+    all_things.sort(key=lambda x: x.value, reverse=True)  #最终按照x.value进行排序，价值比最高的排前面
+    total_weight = 0
+    total_price = 0
+
+    for thing in all_things:
+        if total_weight + thing.weight <= max_weight:
+            print(f'小偷拿走了{thing.name}')
+            total_weight += thing.weight
+            total_price += thing.price
+    print(f'总价值：{total_price}美元')
+
+if __name__ == '__main__':
+    main()
+'''
+
+
+# 分治法例子：快速排序。
+
+"""
+快速排序 - 选择枢轴对元素进行划分，左边都比枢轴小右边都比枢轴大
+"""
+'''
+
+def quick_sort(items,comp=lambda x,y:x<=y):
+    items = list(items)[:]
+    _quick_sort(items,0,len(items)-1,comp)
+    return items
+
+def _quick_sort(items,start,end,comp):
+    if start < end:
+        pos = _partition(items, start, end, comp)
+        _quick_sort(items, start, pos-1, comp)
+        _quick_sort(items, pos+1, end, comp)
+
+def _partition(items, start, end, comp):
+    pivot = items[end]
+    i = start - 1
+    for j in range(start,end):
+        if comp(items[j], pivot):
+            i+=1
+            items[i],items[j] = items[j],items[i]
+
+    items[i+1], items[end] = items[end],items[i+1]
+    return i+1
+
+test_list=[3, 6, 8, 10, 1, 2, 1]
+sorted_list=quick_sort(test_list)
+
+print("原始列表:", test_list)
+print("排序后列表:", sorted_list)
+'''
+
+
+# 回溯法例子：骑士巡逻。
+
+"""
+递归回溯法：叫称为试探法，按选优条件向前搜索，当搜索到某一步，
+发现原先选择并不优或达不到目标时，就退回一步重新选择，
+比较经典的问题包括骑士巡逻、八皇后和迷宫寻路等。
+"""
+'''
+import sys 
+import time
+
+SIZE = 5
+total = 0
+
+def print_board(board):
+    for row in board:
+        for col in row:
+            print(str(col).center(4),end='')
+        print()
+
+def patrol(board, row, col, step=1):
+    if row >= 0 and row < SIZE and col >=0 and col < SIZE and board[row][col] == 0:
+        board[row][col] = step
+        if step == SIZE * SIZE:
+            global total
+            total += 1
+            print(f'第{total}种走法：')
+            print_board(board)
+        patrol(board, row - 2, col - 1, step + 1)
+        patrol(board, row - 1, col - 2, step + 1)
+        patrol(board, row + 1, col - 2, step + 1)
+        patrol(board, row + 2, col - 1, step + 1)
+        patrol(board, row + 2, col + 1, step + 1)
+        patrol(board, row + 1, col + 2, step + 1)
+        patrol(board, row - 1, col + 2, step + 1)
+        patrol(board, row - 2, col + 1, step + 1)
+        board[row][col] = 0
+
+def main():
+    board = [[0] * SIZE for _ in range(SIZE)]
+    patrol(board, SIZE - 1, SIZE - 1)
+
+if __name__ == '__main__':
+    main()
+'''
+
+
+# 动态规划例子：子列表元素之和的最大值。输入：0 -2 3 5 -1 2    输出：9
+'''  关键点解析
+
+动态扩展子数组：
+当 max_current + num 比 num 本身更大时，算法会选择扩展当前子数组（如 [3, 5] → [3, 5, -1] → [3, 5, -1, 2]）。
+如果当前子数组的和变成负数，算法会放弃它（如 max(-2, 0 + (-2)) 选择了 -2，但下一步遇到 3 时直接重置为 [3]）。
+
+为什么能覆盖四个数相加的情况？
+Kadane算法不限制子数组长度，只要 max_current + num 能增加和，就会继续扩展。
+
+在 [3, 5, -1, 2] 中：
+3 + 5 = 8（已比之前的 [3] 更好）
+8 + (-1) = 7（虽然变小，但仍比单独 -1 好）
+7 + 2 = 9（最终得到全局最大值）
+'''
+'''
+nums = list(map(int, input().split()))
+max_current = max_global = nums[0]
+for num in nums[1:]:
+    max_current = max(num, max_current + num)
+    max_global = max(max_global, max_current)
+print(max_global)
+'''
+
+
+# 例子：输出函数执行时间的装饰器。
+from functools import wraps
+from time import time
+
+
+def record(output):
+    """可以参数化的装饰器"""
+	
+    def decorate(func):
+        
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            start = time()
+            result = func(*args, **kwargs)
+            output(func.__name__, time() - start)
+            return result
+            
+        return wrapper
+	
+    return decorate
