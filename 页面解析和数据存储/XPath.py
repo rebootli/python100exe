@@ -16,9 +16,22 @@
 # print(result.decode('utf-8'))
 
 
-from lxml import etree
+# from lxml import etree
 
+# html = etree.parse('./页面解析和数据存储/test.html',etree.HTMLParser())
+# result = etree.tostring(html)
+# print(result.decode('utf-8'))
+
+
+from lxml import etree
 html = etree.parse('./页面解析和数据存储/test.html',etree.HTMLParser())
-result = etree.tostring(html)
-print(result.decode('utf-8'))
+result = html.xpath('//*')
+result2 = html.xpath('//li')
+result3 = html.xpath('//li/a')
+print(result3)
+#print(result)
+#print(result2)
+
+
+
 
